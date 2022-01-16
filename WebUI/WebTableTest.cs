@@ -30,7 +30,7 @@ namespace WebUI
         }
 
         [Test,Order(1)]
-        public void NavigateToWebsiteAndVerifyThatYouAreOnCorrectWebsite()
+        public void CheckURLofnavigatedpage()
         {      
             string currentURL = driver.Url.ToString();
             Assert.AreEqual(url, currentURL.ToString());
