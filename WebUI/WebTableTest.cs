@@ -25,20 +25,31 @@ namespace WebUI
         public void StartBrowser()
         {
             var dir = Directory.GetCurrentDirectory();
-            driver = new ChromeDriver(dir);       
+            driver = new ChromeDriver(dir);
+            driver.Url = url;
         }
 
-        [Test]
-        public void ValidateUserListTableAndAddUsers()
+        [Test,Order(1)]
+        public void NavigateToWebsiteAndVerifyThatYouAreOnCorrectWebsite()
+        {      
+            string currentURL = driver.Url.ToString();
+            Assert.AreEqual(url, currentURL.ToString());
+        }
+
+        [Test, Order(2)]
+        public void VerifyThatUserListTableIsDisplayed()
+        {        
+            bool table = driver.FindElement(By.ClassName("smart-table")).Displayed;
+            Assert.IsTrue(table);
+        }
+
+        [Test, Order(3)]
+        public void AddTwoUsersAndVerifyThatTwoUsersWereSuccessfullyAdded()
         {
             var currentDir = Path.GetDirectoryName(new Uri(typeof(Common).Assembly.CodeBase).LocalPath);
             var content = common.ReadFile(currentDir, "TestData/UserTestData.json");
             var users = JsonConvert.DeserializeObject<List<User>>(content);
 
-            driver.Url = url;
-            bool table = driver.FindElement(By.ClassName("smart-table")).Displayed;
-            Assert.IsTrue(table);
-        
             Base webTable = new Base(driver);
 
             users.ForEach(user =>
@@ -62,7 +73,7 @@ namespace WebUI
                 var data = Regex.Split(user, @"\s+");
 
                 List<User> userData = new List<User>();
-                var tester = new User { FirstName = data[0]!="" ? data[0]:data[1], Lastname = data[1], Username = data[2], Customer = data[3], Role = data[4], Email = data[5], Cell = data[6], Password = "" };
+                var tester = new User { FirstName = data[0] != "" ? data[0] : data[1], Lastname = data[1], Username = data[2], Customer = data[3], Role = data[4], Email = data[5], Cell = data[6], Password = "" };
 
                 userTableData.Add(tester);
             }
@@ -80,7 +91,7 @@ namespace WebUI
             Assert.IsTrue(count == users.Count());
         }
 
-        [TearDown]
+        [OneTimeTearDown]
         public void closeBrowser()
         {
             driver.Close();
