@@ -1,24 +1,28 @@
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using WebUi;
 using WebUi.Model;
+using Assert = Microsoft.VisualStudio.TestTools.UnitTesting.Assert;
 
 namespace WebUI
 {
+    [TestClass]
     public class Tests
     {
         IWebDriver driver;
         string url = "https://www.way2automation.com/angularjs-protractor/webtables/";
         Common common = new Common();
 
-        [SetUp]
-        public void startBrowser()
+      [OneTimeSetUp]
+        public void StartBrowser()
         {
             var dir = Directory.GetCurrentDirectory();
             driver = new ChromeDriver(dir);       
@@ -27,8 +31,9 @@ namespace WebUI
         [Test]
         public void ValidateUserListTableAndAddUsers()
         {
-            var content = common.ReadFile("TestData/UserTestData.json");
-            var users = JsonConvert.DeserializeObject<User[]>(content);
+            var currentDir = Path.GetDirectoryName(new Uri(typeof(Common).Assembly.CodeBase).LocalPath);
+            var content = common.ReadFile(currentDir, "TestData/UserTestData.json");
+            var users = JsonConvert.DeserializeObject<List<User>>(content);
 
             driver.Url = url;
             bool table = driver.FindElement(By.ClassName("smart-table")).Displayed;
@@ -36,7 +41,7 @@ namespace WebUI
         
             Base webTable = new Base(driver);
 
-            users.ToList().ForEach(user =>
+            users.ForEach(user =>
             {
                 webTable.Click_Add_User();
                 bool addUserForm = driver.FindElement(By.ClassName("modal-body")).Displayed;
@@ -53,45 +58,21 @@ namespace WebUI
             {
                 if (user.Length < 1)
                     return;
-                User tester = new User();
                 user.Trim();
                 var data = Regex.Split(user, @"\s+");
-                List<string> list = new List<string>();
-                var listing = data.ToList();
-                if (listing.Count >= 8)
-                {
-                    listing.RemoveAt(0);
-                }
-                if (listing.Count < 8)
-                {
-                    listing.Insert(3, "");
-                }
 
-                for (int i = 0; i < listing.Count; i++)
-                {
-                    list.Add(listing[i]);
-                }
+                List<User> userData = new List<User>();
+                var tester = new User { FirstName = data[0]!="" ? data[0]:data[1], Lastname = data[1], Username = data[2], Customer = data[3], Role = data[4], Email = data[5], Cell = data[6], Password = "" };
 
-                if (list.Count > 0)
-                {
-
-                    tester.FirstName = list[0];
-                    tester.Lastname = list[1];
-                    tester.Username = list[2];
-                    tester.Customer = list[3];
-                    tester.Role = list[4];
-                    tester.Email = list[5];
-                    tester.Cell = list[6];
-                    tester.Password = "";
-                    userTableData.Add(tester);
-                }
-            });
+                userTableData.Add(tester);
+            }
+            );
 
             int count = 0;
 
             userTableData.ForEach(user =>
             {
-                var y = users.ToList().Where(x => x.FirstName == user.FirstName);
+                var y = users.ToList().Where(x => x.FirstName == user.FirstName.Trim());
                 if (y.FirstOrDefault() != null)
                     count++;
             });

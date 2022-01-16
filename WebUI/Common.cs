@@ -10,11 +10,11 @@ namespace WebUi
 
         }
 
-        public string ReadFile(string fileName)
+        public string ReadFile(string dir, string fileName)
         {
-            var currentDir = Path.GetDirectoryName(new Uri(typeof(Common).Assembly.CodeBase).LocalPath);
+            
 
-            return File.ReadAllText($"{currentDir}/{fileName}");
+            return File.ReadAllText($"{dir}/{fileName}");
         }
     }
 }

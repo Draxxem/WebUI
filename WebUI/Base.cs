@@ -10,12 +10,10 @@ namespace WebUI
     {
         private IWebDriver driver;
         private readonly Random _random = new Random();
-        //private AddUserPageContext addUser;
 
         public Base(IWebDriver _driver)
         {
             this.driver = _driver;
-            //this.addUser = new AddUserPageContext(this.driver);
         }
 
         IWebElement txtFirstName => driver.FindElement(By.Name("FirstName"));
