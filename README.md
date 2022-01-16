@@ -26,11 +26,11 @@ http://www.way2automation.com/angularjs-protractor/webtables/
 
 **The tests scenarios cover:**
 
-Test1: Check URL of navigated page
+Test1: CheckURLofnavigatedpage
 
-Test 2: Check that the web table exists
+Test 2: VerifyThatUserListTableIsDisplayed
 
-Test 3: - Add 2 users with unique Usernames on each test run - test data is stored in .json format
+Test 3: - AddTwoUsersAndVerifyThatTwoUsersWereSuccessfullyAdded
 
 **Demo's not currently available**
 
